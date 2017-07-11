@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>sqr - demo </title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, minimum-scale=1, maximum-scale=1">
+    <script src="https://vuejs.org/js/vue.min.js"></script>
+    
+    <script src="lib/sqr/sqr.min.js"></script>
+    
+
+  </head>
+  <body>
+      <canvas id="gl"></canvas>
+      <!-- ui -->
+      <div id="ui">
+        <transition name="bg-fade">
+          <div v-if="show == 1" class="ui">
+            demo
+          </div>
+        </transition>
+       </div>
+      <!-- /ui -->
+      <script src="sqr.app.js"></script>
+</body>
+</html>
