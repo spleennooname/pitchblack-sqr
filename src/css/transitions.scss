@@ -1,0 +1,30 @@
+
+
+.noSupport-fade-enter-active,
+.noSupport-fade-leave-active {
+  transition: opacity 5s ease-out;
+}
+
+.noSupport-fade-enter,
+.noSupport-fade-leave-to {
+  opacity: 1;
+}
+
+/*bg */
+
+.intro-fade-enter-active,
+.intro-fade-leave-active {
+  transition: opacity 10s ease-out;
+}
+
+.intro-fade-enter,
+.intro-fade-leave-to {
+  opacity: 0;
+}
+
+.hud-fade-enter-active, .hud-fade-leave-active {
+  transition: opacity 3s ease-out;
+}
+.hud-fade-enter, .hud-fade-leave-to{
+  opacity: 0
+}

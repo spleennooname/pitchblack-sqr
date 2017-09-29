@@ -1,0 +1,75 @@
+w<!DOCTYPE html>
+<html>
+  <head>
+    <title>pitchblack - an webcam/ webgl experiment by spleen666@gmail.com</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, minimum-scale=1, maximum-scale=1">
+
+    <!-- Search Engine -->
+    <meta name="description" content="an WebGL playground with volumetric light scattering (godrays), webcam & black-white thresholds.">
+    <meta name="image" content="https://pitchblack.surge.sh/assets/pitchblack-screenshot.jpg">
+
+    <!-- Schema.org for Google -->
+    <meta itemprop="name" content="PITCHBLACK">
+    <meta itemprop="description" content="an WebGL playground with volumetric light scattering (godrays), webcam & black-white thresholds.">
+    <meta itemprop="image" content="https://pitchblack.surge.sh/assets/pitchblack-preview.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="PITCHBLACK">
+    <meta name="twitter:description" content="an WebGL playground with volumetric light scattering (godrays), webcam & black-white thresholds.">
+    <meta name="twitter:site" content="@vivacchio">
+    <meta name="twitter:creator" content="@vivacchio">
+    <meta name="twitter:image:src" content="https://pitchblack.surge.sh/assets/pitchblack-preview.jpg">
+
+    <!-- Open Graph general (Facebook, Pinterest & Google+) -->
+    <meta property="og:title" content="PITCHBLACK">
+    <meta property="og:description" content="an WebGL playground with volumetric light scattering (godrays), webcam & black-white thresholds.">
+    <meta property="og:image" content="https://pitchblack.surge.sh/assets/pitchblack-preview.jpg">
+    <meta property="og:url" content="https://pitchblack.surge.sh">
+    <meta property="og:site_name" content="PITCHBLACK">
+    <meta property="og:type" content="website">
+
+    <style type="text/css">
+      [v-cloak] {
+        display: none;
+      }
+
+    </style>
+    <link href="css/style.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="https://vuejs.org/js/vue.min.js"></script>
+  </head>
+  <body>
+    <div class="gl">
+      <canvas id="gl"></canvas>
+    </div>
+    <!-- ui -->
+    <div id="ui" v-cloak>
+      <transition name="hud-fade">
+        <div v-if="hud == 1 && !noSupport" class="hud">
+          <span class="title">pitchblack</span>
+          <span class="by">crafted by <a href="https://github.com/spleennooname">spleen.noo.name</a><br/></span>
+        </div>
+      </transition>
+      <transition name="intro-fade">
+        <div v-if="show == 1" class="intro">
+          <span v-if="!noSupport">pitchblack cam</span>
+          <span v-if="noSupport">webcam access is not supported. please use latest chrome/firefox.</span>
+        </div>
+      </transition>
+      <transition name="noSupport-fade">
+        <div v-if="noSupport" class="intro">
+          webcam access is not supported. please use latest chrome/firefox.
+        </div>
+      </transition>
+    </div>
+    <!-- /ui -->
+    <script src="lib/sqr/sqr.min.js" defer ></script>
+    <script src="bundle.app.js" defer></script>
+  </body>
+</html>
