@@ -56,6 +56,10 @@ const app = new Vue({
 
     },
 
+    save_screenshot(){
+      console.log( this.renderer.context.gl.canvas );
+    },
+
     done(stream) {
 
       this.stream = stream;
@@ -77,9 +81,12 @@ const app = new Vue({
       this.show = 0;
 
       this.video = assets.webcam;
-      //assets.webcam.srcObject = this.stream;
+      this.video.loop = true;
+			this.video.muted = true;
+			this.video.setAttribute( 'webkit-playsinline', 'webkit-playsinline' );
+			this.video.setAttribute( 'playsinline', 'playsinline' );
 
-      // console.log("sqr", assets.webcam)
+      this.params["save"] = this.save_screenshot;
 
       //console.log(this.video, this.video instanceof HTMLVideoElement, this);
 
@@ -87,12 +94,7 @@ const app = new Vue({
       // this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
       // document.body.appendChild(this.stats.domElement);
 
-      this.renderer = SQR.Renderer('#gl', {
-          antialias: true
-        })
-        .clearColor(0.0, 0.0, 0.0, 1);
-
-      //console.log( this.renderer)
+      this.renderer = SQR.Renderer('#gl', { antialias: true }).clearColor(0.0, 0.0, 0.0, 1);
 
       this.rawFBO = SQR.FrameBuffer();
       this.postFBO = SQR.FrameBuffer();
@@ -123,8 +125,6 @@ const app = new Vue({
 
       this.root.add(this.plane);
 
-      //events
-
       this.isTouch = 'ontouchstart' in document;
       this.mousemove = this.isTouch ? 'touchmove' : 'mousemove';
       window.addEventListener('resize', this.resize);
@@ -152,6 +152,7 @@ const app = new Vue({
       f.open();
 
       this.gui.add(this.params, 'quality', 1.0, 3.5).step(0.25).onChange(this.set_quality);
+      this.gui.add(this.params, 'save').name('take screenshot!')
 
       // this.gui.add(this.params, 'quality', {
       //   High: 1,
@@ -159,28 +160,37 @@ const app = new Vue({
       //   Low: 3
       // }).onChange(this.set_quality);
 
-      //console.log( this.texture.getSource().videoWidth, this.texture.getSource().videoHeight );
+      //document.querySelector(".gl").addEventListener('contextmenu', this.save_screenshot);
+
+      //console.log( this.renderer.context.gl.canvas );
+
+      // var button = document.getElementById('btn-save');
+      // button.addEventListener('click', this.save_screenshot);
+
 
       this.lastFrameTimeMs = Date.now();
-      this.resize();
+
       this.render();
+      this.resize();
 
     },
 
-    // set_weight: function (value) {
-    //   // this.post.shader.setUniform('WEIGHT', value);
-    // },
-    //
-    // set_decay: function (value) {
-    //   // this.post.shader.setUniform('DECAY_FACTOR', value);
-    // },
-    //
-    // set_density: function (value) {
-    //   // this.post.shader.setUniform('DENSITY', value);
-    // },
+    save_screenshot(){
+
+      this.render();
+      var canvas = this.renderer.context.gl.canvas;
+      var dataURL = canvas.toDataURL("image/jpeg");
+      if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
+          var t = new Date(),
+              o = t.getFullYear() + "-" + t.getMonth() + "-" + t.getDate() + "_" + t.getHours() + "." + t.getMinutes() + "." + t.getSeconds(),
+              a = document.createElement("a");
+          a.href = dataURL, a.download = "pitchblack_" + o + ".jpg", a.click();
+      } else {
+        window.open(dataURL);
+      }
+    },
 
     set_quality(value) {
-      // this.post.shader.setUniform('DENSITY', value);
       this.scaling = 4 - value;
       this.resize();
     },
@@ -190,6 +200,7 @@ const app = new Vue({
       if( !this.video){
         return;
       }
+
       if (this.video.readyState !== this.video.HAVE_ENOUGH_DATA) {
         return;
       }
@@ -227,7 +238,7 @@ const app = new Vue({
            requestAnimationFrame(this.render);
            return;
        }
-       this.lastFrameTimeMs = timestamp;
+      this.lastFrameTimeMs = timestamp;
 
       this.draw();
 
@@ -237,14 +248,20 @@ const app = new Vue({
 
     resize(e) {
 
+      if( !this.video )
+        return;
+
       var w = window.innerWidth,
           h = window.innerHeight,
-          wCam = this.video.videoWidth;
+          naturalAspectRatio = this.video.videoWidth/this.video.videoHeight
 
-      w = w > wCam ? wCam : w;
-      h = w / (16 / 9); // 9/16 * 100
+      console.log( naturalAspectRatio)
 
-      var aspect = w / h;
+      // w = w > wCam ? wCam : w;
+      h = this.video.videoHeight;
+      w = h * naturalAspectRatio;
+
+      //var aspect = w / h;
       // console.log(this.scaling, ":",w / this.scaling, h / this.scaling);
 
       this.rawFBO.resize(w / this.scaling, h / this.scaling);
@@ -252,7 +269,7 @@ const app = new Vue({
       this.thresoldFBO.resize(w / this.scaling, h / this.scaling);
 
       this.renderer.context.size(w / this.scaling, h / this.scaling, window.devicePixelRatio);
-      this.camera.projection = new SQR.ProjectionMatrix().perspective(70, aspect, 1, 1000);
+      this.camera.projection = new SQR.ProjectionMatrix().perspective(70, naturalAspectRatio, 1, 1000);
     }
 
   }
