@@ -43,19 +43,15 @@ body {
   width: 100%;
   min-width: 320px;
   height: 100vh;
-  
+
   background: #111;
 
   canvas {
     position: absolute;
     z-index: 0;
+    max-width: 1024px;
     width: 100%;
-
-    // height: auto;
-    // min-height: 480px;
-    // max-height: calc( 100% / 1.3333);
-    height: 100%;
-
+    height: auto;
     pointer-events: none;
   }
 
@@ -127,6 +123,19 @@ body {
    a{
     text-decoration: none;
     color: #c4c4c4;
+  }
+
+  .screenshot--btn{
+    cursor: pointer;
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    font-size: 2.5rem;
+    color: white;
+
+    &:hover{
+       opacity: 0.5
+    }
   }
 
 }

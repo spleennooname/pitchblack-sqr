@@ -39,7 +39,7 @@ w<!DOCTYPE html>
 
     </style>
     <link href="css/style.css" rel="stylesheet" type="text/css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="https://vuejs.org/js/vue.min.js"></script>
@@ -55,6 +55,7 @@ w<!DOCTYPE html>
         <div v-if="hud == 1 && !noSupport" class="hud">
           <span class="title">pitchblack</span>
           <span class="by">crafted by <a href="https://github.com/spleennooname">spleen.noo.name</a><br/></span>
+          <div class="screenshot--btn" @click="save_screenshot"><i class="fa fa-camera" aria-hidden="true"></i></a>
         </div>
       </transition>
       <transition name="intro-fade">

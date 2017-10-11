@@ -37,8 +37,6 @@ const app = new Vue({
           mandatory: { minWidth: 640, minHeight: 480 },
           optional: [
             { minFrameRate: 35 },
-            { maxWidth: 640 },
-            { maxHeigth: 480 }
           ]
         }
       }
@@ -54,10 +52,6 @@ const app = new Vue({
         this.noSupport = true;
       }
 
-    },
-
-    save_screenshot(){
-      console.log( this.renderer.context.gl.canvas );
     },
 
     done(stream) {
@@ -86,7 +80,7 @@ const app = new Vue({
 			this.video.setAttribute( 'webkit-playsinline', 'webkit-playsinline' );
 			this.video.setAttribute( 'playsinline', 'playsinline' );
 
-      this.params["save"] = this.save_screenshot;
+
 
       //console.log(this.video, this.video instanceof HTMLVideoElement, this);
 
@@ -152,7 +146,7 @@ const app = new Vue({
       f.open();
 
       this.gui.add(this.params, 'quality', 1.0, 3.5).step(0.25).onChange(this.set_quality);
-      this.gui.add(this.params, 'save').name('take screenshot!')
+      //this.gui.add(this.params, 'save').name('take screenshot!')
 
       // this.gui.add(this.params, 'quality', {
       //   High: 1,
