@@ -4,7 +4,7 @@
 
 ## video
 
-[![Watch the video]](https://img.youtube.com/vi/3UCDyOZjQck/0.jpg)](https://www.youtube.com/watch?v=3UCDyOZjQck)
+![webgl ready](https://img.shields.io/badge/webgl-ready-green.svg) ![vue 2.x](https://img.shields.io/badge/vue2.x-ready-green.svg) ![glsl](https://img.shields.io/badge/glsl-custom-green.svg)
 
 ## techs/features
 
@@ -18,9 +18,3 @@
 ## changelog
 
   * 02/10/17 add save-screenshot function
-  * 
-
-## refs
-
-
-## credits
