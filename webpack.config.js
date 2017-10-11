@@ -1,6 +1,7 @@
 var path = require('path'),
   webpack = require('webpack'),
-  ExtractTextPlugin = require("extract-text-webpack-plugin");
+  ExtractTextPlugin = require("extract-text-webpack-plugin"),
+  JavaScriptObfuscator = require('webpack-obfuscator');
 
 module.exports = {
 
@@ -15,30 +16,31 @@ module.exports = {
 
   module: {
     rules: [
-        {
-          enforce: 'pre',
-          test: /\.js$/,
-          use: {
-            loader: 'eslint-loader',
-            options: {
-              emitError: false,
-              emitWarning: true
-            }
-          },
-          exclude: /(node_modules)/
-        },
+        // {
+        //   enforce: 'pre',
+        //   test: /\.js$/,
+        //   use: {
+        //     loader: 'eslint-loader',
+        //     options: {
+        //       emitError: false,
+        //       emitWarning: true
+        //     }
+        //   },
+        //   exclude: /(node_modules)/
+        // },
       {
         test: /\.js$/,
         include: path.resolve(__dirname, "src"),
         exclude: /(node_modules)/,
-        use: { loader: 'babel-loader' }
+        use: {
+          loader: 'babel-loader' }
       },
       { test: /\.(glsl|vs|fs)$/, loader: 'shader-loader' },
       { test: /\.(sass|scss)$/, loader: ExtractTextPlugin.extract({ fallback: 'style-loader', use: ['css-loader', 'sass-loader'] }) },
     ]
   },
 
-  devtool: "#source-map",
+  //devtool: "#source-map",
 
   devServer: {
     hot: true,
@@ -48,9 +50,12 @@ module.exports = {
   },
 
   plugins: [
-    new ExtractTextPlugin("css/style.css")
+    new ExtractTextPlugin("css/style.css"),
+    new JavaScriptObfuscator ({
+      rotateUnicodeArray: true
+    })
   ],
 
-  watch: true
+  //watch: true
 
 };
