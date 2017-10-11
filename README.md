@@ -4,6 +4,8 @@
 
 ## video
 
+[lWatch the video on youtube](https://www.youtube.com/watch?v=3UCDyOZjQck)
+
 [![Watch the video](https://pitchblack.surge.sh/assets/pitchblack-preview.jpg)](https://www.youtube.com/watch?v=3UCDyOZjQck)
 
 ## techs
