@@ -1,5 +1,5 @@
 
-![webgl ready](https://img.shields.io/badge/webgl-ready-green.svg) ![vue 2.x](https://img.shields.io/badge/vue2x-ready-green.svg) ![glsl](https://img.shields.io/badge/glsl-custom-green.svg) ![chrome](https://img.shields.io/badge/chrome-ok-green.svg) ![firefox](https://img.shields.io/badge/firefox-ok-green.svg) ![ios](https://img.shields.io/badge/ios11-not-yet-ready-red.svg)
+![webgl ready](https://img.shields.io/badge/webgl-ready-green.svg) ![vue 2.x](https://img.shields.io/badge/vue2x-ready-green.svg) ![glsl](https://img.shields.io/badge/glsl-custom-green.svg) ![chrome](https://img.shields.io/badge/chrome-ok-green.svg) ![firefox](https://img.shields.io/badge/firefox-ok-green.svg) ![ios](https://img.shields.io/badge/ios11-todo-red.svg)
 
 # PITCHBLACK
 > webcam multipass experimentation features webcam, godrays && black/white thresholds.
