@@ -1,8 +1,8 @@
 
-![webgl ready](https://img.shields.io/badge/webgl-ready-green.svg) ![vue 2.x](https://img.shields.io/badge/vue2x-ready-green.svg) ![glsl](https://img.shields.io/badge/glsl-custom-green.svg)
+![webgl ready](https://img.shields.io/badge/webgl-ready-green.svg) ![vue 2.x](https://img.shields.io/badge/vue2x-ready-green.svg) ![glsl](https://img.shields.io/badge/glsl-custom-green.svg) ![chrome](https://img.shields.io/badge/chrome-ok-green.svg) ![firefox](https://img.shields.io/badge/firefox-ok-green.svg) ![ios](https://img.shields.io/badge/ios11-not-yet-ready-red.svg)
 
 # PITCHBLACK
-> multipass effect ( godrays + threshold ) with webcam & WebGL.
+> webcam multipass experimentation features webcam, godrays && black/white thresholds.
 
 ## video
 
@@ -20,3 +20,7 @@
 ## changelog
 
   * 02/10/17 add save-screenshot function
+
+## TODO
+
+  * migrate to PIXI
