@@ -1,4 +1,4 @@
-w<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>pitchblack - an webcam/ webgl experiment by spleen666@gmail.com</title>
@@ -8,25 +8,25 @@ w<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, minimum-scale=1, maximum-scale=1">
 
     <!-- Search Engine -->
-    <meta name="description" content="an WebGL playground with volumetric light scattering (godrays), webcam & black-white thresholds.">
+    <meta name="description" content="WebGL multipass experimentation features webcam, godrays && black/white thresholds.">
     <meta name="image" content="https://pitchblack.surge.sh/assets/pitchblack-screenshot.jpg">
 
     <!-- Schema.org for Google -->
     <meta itemprop="name" content="PITCHBLACK">
-    <meta itemprop="description" content="an WebGL playground with volumetric light scattering (godrays), webcam & black-white thresholds.">
+    <meta itemprop="description" content="WebGL multipass experimentation features webcam, godrays && black/white thresholds.">
     <meta itemprop="image" content="https://pitchblack.surge.sh/assets/pitchblack-preview.jpg">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="PITCHBLACK">
-    <meta name="twitter:description" content="an WebGL playground with volumetric light scattering (godrays), webcam & black-white thresholds.">
+    <meta name="twitter:description" content="WebGL multipass experimentation features webcam, godrays && black/white thresholds.">
     <meta name="twitter:site" content="@vivacchio">
     <meta name="twitter:creator" content="@vivacchio">
     <meta name="twitter:image:src" content="https://pitchblack.surge.sh/assets/pitchblack-preview.jpg">
 
     <!-- Open Graph general (Facebook, Pinterest & Google+) -->
     <meta property="og:title" content="PITCHBLACK">
-    <meta property="og:description" content="an WebGL playground with volumetric light scattering (godrays), webcam & black-white thresholds.">
+    <meta property="og:description" content="WebGL multipass experimentation features webcam, godrays && black/white thresholds.">
     <meta property="og:image" content="https://pitchblack.surge.sh/assets/pitchblack-preview.jpg">
     <meta property="og:url" content="https://pitchblack.surge.sh">
     <meta property="og:site_name" content="PITCHBLACK">
@@ -40,13 +40,17 @@ w<!DOCTYPE html>
     </style>
     <link href="css/style.css" rel="stylesheet" type="text/css"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="https://vuejs.org/js/vue.min.js"></script>
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js"></script> -->
+    <script src="bundle.lib.js"></script>
+
   </head>
   <body>
     <div class="gl">
-      <img src="" id="canvasImage" />
       <canvas id="gl"></canvas>
     </div>
     <!-- ui -->

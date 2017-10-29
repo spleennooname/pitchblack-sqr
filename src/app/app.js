@@ -1,8 +1,18 @@
+//import SqrCamMixin from "./vue/mixins/sqr";
+//import ThreeCamMixin from "./vue/mixins/three";
+
 // start app
+
+const SHADERS = {
+  threshold : require("../glsl/threshold.glsl"),
+  godrays : require("../glsl/godrays.glsl")
+}
 
 const app = new Vue({
 
   el: '#ui',
+
+  // mixins:[ SqrCamMixin  ],
 
   data: {
     show: 1,
@@ -14,9 +24,9 @@ const app = new Vue({
       weight: 0.75,
       decay: 0.90,
       density: 0.85,
-      quality: 3,
+      quality: 2.75,
       samples: 20,
-      threshold: 0.28,
+      threshold: 0.45,
       invert: false,
       soft: 0.001
     }
@@ -28,74 +38,68 @@ const app = new Vue({
 
   methods: {
 
+    hasCam(){
+        return !!navigator.getUserMedia || !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    },
+
     run() {
 
       this.show = 0;
-      this.constraints = {
-        audio: false,
-        video: {
-          mandatory: { minWidth: 640, minHeight: 480 },
-          optional: [
-            { minFrameRate: 35 },
-          ]
-        }
-      }
 
-      if (typeof navigator.mediaDevices !== "undefined"){
-        if (!!navigator.mediaDevices.getUserMedia) {
+      this.constraints =  {
+        video: {
+            mandatory: {
+                minAspectRatio: 1.25,
+                maxAspectRatio: 1.6
+            },
+            optional: [{
+                minWidth: 640
+            }, {
+                minHeight: 480
+            }, {
+                maxWidth: 960
+            }, {
+                maxHeight: 720
+            }]
+        }
+      };
+
+      if ( this.hasCam() ) {
           navigator.mediaDevices.getUserMedia(this.constraints)
             .then(this.done)
             .catch(this.fail);
-        }
       }
       else {
         this.noSupport = true;
       }
-
-    },
-
-    done(stream) {
-
-      this.stream = stream;
-
-      SQR.Loader.loadAssets([
-        ['glsl/thresold.glsl', 'thresold.glsl'],
-        ['glsl/godray.glsl', 'post.glsl'],
-        'webcam'
-        ], this.sqr);
     },
 
     fail() {
       this.noSupport = true;
     },
 
-    sqr(assets) {
+    done( stream ){
+      SQR.Loader.loadAssets([
+        'webcam'
+      ], this.onload);
+    },
 
-      this.hud = 1;
-      this.show = 0;
+    onload( assets ) {
 
       this.video = assets.webcam;
       this.video.loop = true;
-			this.video.muted = true;
-			this.video.setAttribute( 'webkit-playsinline', 'webkit-playsinline' );
-			this.video.setAttribute( 'playsinline', 'playsinline' );
+      this.video.muted = true;
 
-
-
-      //console.log(this.video, this.video instanceof HTMLVideoElement, this);
-
-      // this.stats = new Stats();
-      // this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-      // document.body.appendChild(this.stats.domElement);
-
-      this.renderer = SQR.Renderer('#gl', { antialias: true }).clearColor(0.0, 0.0, 0.0, 1);
+      this.renderer = SQR.Renderer('#gl', {
+        antialias: true
+      }).clearColor(0.0, 0.0, 0.0, 1);
 
       this.rawFBO = SQR.FrameBuffer();
       this.postFBO = SQR.FrameBuffer();
       this.thresoldFBO = SQR.FrameBuffer();
 
-      this.post = SQR.Primitives.createPostEffect(assets['post.glsl']);
-      this.thresold = SQR.Primitives.createPostEffect(assets['thresold.glsl']);
+      this.post = SQR.Primitives.createPostEffect(SHADERS.godrays);
+      this.thresold = SQR.Primitives.createPostEffect(SHADERS.threshold);
 
       this.camera = SQR.Transform();
       this.camera.position.z = 2.5;
@@ -113,25 +117,37 @@ const app = new Vue({
       this.shader = SQR.Shader(SQR.GLSL.texture).use().setUniform('uTexture', this.texture);
 
       this.plane = SQR.Transform();
-      this.plane.buffer = SQR.Primitives.createPlane(4, 4, 8, 8, 0, 0).update();
+      this.plane.buffer = SQR.Primitives.createPlane(4, 3, 2, 2, 0, 0).update();
       this.plane.rotation.x = Math.PI / 2;
       this.plane.shader = this.shader;
 
       this.root.add(this.plane);
 
+      this.scene();
+
+    },
+
+    scene( obj ) {
+
+      this.hud = 1;
+      this.show = 0;
+
+      this.stats = new Stats();
+      this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+      document.body.appendChild(this.stats.domElement);
+
       this.isTouch = 'ontouchstart' in document;
       this.mousemove = this.isTouch ? 'touchmove' : 'mousemove';
-      window.addEventListener('resize', this.resize);
 
-      this.tx = 0;
-      this.ty = 0;
-      this.mx = 0;
-      this.my = 0;
+      //
+      // this.tx = 0;
+      // this.ty = 0;
+      // this.mx = 0;
+      // this.my = 0;
 
       this.gui = new dat.GUI();
 
       var f = this.gui.addFolder('rays');
-
       f.add(this.params, 'weight', 0.1, 1.0);
       f.add(this.params, 'decay', 0.6, 1.0);
       f.add(this.params, 'density', 0.1, 1.0);
@@ -146,31 +162,17 @@ const app = new Vue({
       f.open();
 
       this.gui.add(this.params, 'quality', 1.0, 3.5).step(0.25).onChange(this.set_quality);
-      //this.gui.add(this.params, 'save').name('take screenshot!')
 
-      // this.gui.add(this.params, 'quality', {
-      //   High: 1,
-      //   Mid: 2,
-      //   Low: 3
-      // }).onChange(this.set_quality);
-
-      //document.querySelector(".gl").addEventListener('contextmenu', this.save_screenshot);
-
-      //console.log( this.renderer.context.gl.canvas );
-
-      // var button = document.getElementById('btn-save');
-      // button.addEventListener('click', this.save_screenshot);
-
-
-      this.lastFrameTimeMs = Date.now();
-
+      this.then = Date.now();
+      this.now = 0;
+      this.fps = 50;
+      window.addEventListener('resize', this.resize);
       this.render();
       this.resize();
 
     },
 
     save_screenshot(){
-
       this.render();
       var canvas = this.renderer.context.gl.canvas;
       var dataURL = canvas.toDataURL("image/jpeg");
@@ -191,13 +193,15 @@ const app = new Vue({
 
     draw() {
 
-      if( !this.video){
+      if( !this.video || this.video.readyState !== this.video.HAVE_ENOUGH_DATA) {
         return;
       }
 
-      if (this.video.readyState !== this.video.HAVE_ENOUGH_DATA) {
-        return;
-      }
+      this.update();
+
+    },
+
+    update() {
 
       this.texture.update();
 
@@ -222,48 +226,40 @@ const app = new Vue({
       this.post.shader.setUniform('DENSITY', this.params["density"]);
       this.post.shader.setUniform('uTexture', this.thresoldFBO.texture);
       this.renderer.render(this.post);
-
     },
 
     render(timestamp) {
 
-      // Throttle the frame rate.
-       if (timestamp < this.lastFrameTimeMs + (1000 / 50 )) {
-           requestAnimationFrame(this.render);
-           return;
-       }
-      this.lastFrameTimeMs = timestamp;
-
-      this.draw();
-
       requestAnimationFrame(this.render);
+
+      this.stats.begin();
+      this.now = Date.now();
+      var delta = this.now - this.then;
+      if (delta > (1000/this.fps)) {
+        this.draw();
+        this.then = this.now - (delta % (1000/this.fps) );
+      }
+      this.stats.end();
 
     },
 
     resize(e) {
 
-      if( !this.video )
+      if (!this.video)
         return;
 
       var w = window.innerWidth,
-          h = window.innerHeight,
-          naturalAspectRatio = this.video.videoWidth/this.video.videoHeight
+        h = window.innerHeight,
+        aspectRatio = this.video.videoWidth / this.video.videoHeight
 
-      console.log( naturalAspectRatio)
-
-      // w = w > wCam ? wCam : w;
       h = this.video.videoHeight;
-      w = h * naturalAspectRatio;
-
-      //var aspect = w / h;
-      // console.log(this.scaling, ":",w / this.scaling, h / this.scaling);
+      w = h * aspectRatio;
 
       this.rawFBO.resize(w / this.scaling, h / this.scaling);
       this.postFBO.resize(w / this.scaling, h / this.scaling);
       this.thresoldFBO.resize(w / this.scaling, h / this.scaling);
-
       this.renderer.context.size(w / this.scaling, h / this.scaling, window.devicePixelRatio);
-      this.camera.projection = new SQR.ProjectionMatrix().perspective(70, naturalAspectRatio, 1, 1000);
+      this.camera.projection = new SQR.ProjectionMatrix().perspective(70, aspectRatio, 1, 1000);
     }
 
   }

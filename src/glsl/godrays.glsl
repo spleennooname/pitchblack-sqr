@@ -1,5 +1,5 @@
 #ifdef GL_ES
-precision highp float;
+precision mediump float;
 #endif
 
 attribute vec2 aPosition;
@@ -14,7 +14,7 @@ void main(void) {
 
 //#fragment
 #ifdef GL_ES
-precision highp float;
+precision mediump float;
 #endif
 
 uniform sampler2D uTexture;
@@ -31,7 +31,7 @@ varying vec2 vUV;
 //#define DENSITY 0.85
 //#define WEIGHT 0.58
 
-#define NUM_SAMPLES 28
+#define NUM_SAMPLES 25
 
 uniform float WEIGHT;
 uniform float DECAY_FACTOR;
@@ -71,7 +71,7 @@ void main(){
 
   float t = uTime;
 
-  t *= 0.0016;
+  t *= 0.0018;
 
   delta_tc = uv + vec2( sin( t*.3)*.3, -cos(t*.2)*.3 ) - .5;
   delta_tc *= 1.0 / float(NUM_SAMPLES) * DENSITY;
@@ -86,7 +86,7 @@ void main(){
     tc -= delta_tc;
     sample_tx = texture2D(uTexture, tc ) * illumination_decay * WEIGHT;
     //sample_tx *= illumination_decay * WEIGHT;
-    color += sample_tx * noise( vec2(tc.y, tc.x) ) ;
+    color += sample_tx * tc.y;//noise( vec2(tc.y, tc.x) ) ;
     illumination_decay *= DECAY_FACTOR ;
   }
 

@@ -49,7 +49,7 @@ body {
   canvas {
     position: absolute;
     z-index: 0;
-    max-width: 1024px;
+    max-width: 1440px;
     width: 100%;
     height: auto;
     pointer-events: none;
@@ -128,8 +128,8 @@ body {
   .screenshot--btn{
     cursor: pointer;
     position: absolute;
-    bottom: 1rem;
-    left: 1rem;
+    bottom: 0px;
+    left: 10px;
     font-size: 2.5rem;
     color: white;
 

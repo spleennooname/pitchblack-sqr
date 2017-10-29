@@ -1,12 +1,14 @@
 var path = require('path'),
-  webpack = require('webpack'),
-  ExtractTextPlugin = require("extract-text-webpack-plugin"),
-  JavaScriptObfuscator = require('webpack-obfuscator');
+    webpack = require('webpack'),
+    OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin'),
+    ExtractTextPlugin = require("extract-text-webpack-plugin"),
+    JavaScriptObfuscator = require('webpack-obfuscator');
 
 module.exports = {
 
   entry:{
-     app:[ './src/app.js' ], // lib:[ './src/lib.js' ]
+     app:[ './src/app.js' ],
+     lib:[ './src/lib.js' ]
   },
 
   output: {
@@ -32,8 +34,7 @@ module.exports = {
         test: /\.js$/,
         include: path.resolve(__dirname, "src"),
         exclude: /(node_modules)/,
-        use: {
-          loader: 'babel-loader' }
+        use: { loader: 'babel-loader' }
       },
       { test: /\.(glsl|vs|fs)$/, loader: 'shader-loader' },
       { test: /\.(sass|scss)$/, loader: ExtractTextPlugin.extract({ fallback: 'style-loader', use: ['css-loader', 'sass-loader'] }) },
@@ -50,7 +51,11 @@ module.exports = {
   },
 
   plugins: [
-    new ExtractTextPlugin("css/style.css"),
+    // css optimize
+    new OptimizeCssAssetsPlugin(),
+    new ExtractTextPlugin({
+      filename: 'css/style.css'
+    }),
     new JavaScriptObfuscator ({
       rotateUnicodeArray: true
     })
