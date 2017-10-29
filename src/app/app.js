@@ -173,7 +173,9 @@ const app = new Vue({
     },
 
     save_screenshot(){
-      this.render();
+
+      this.draw();
+
       var canvas = this.renderer.context.gl.canvas;
       var dataURL = canvas.toDataURL("image/jpeg");
       if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
