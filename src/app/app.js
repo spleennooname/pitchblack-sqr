@@ -79,19 +79,17 @@ const app = new Vue({
     },
 
     done( stream ){
-      SQR.Loader.loadAssets([
-        'webcam'
-      ], this.onload);
-    },
-
-    onload( assets ) {
-
-      this.video = assets.webcam;
+      this.video = document.createElement("video");
+      this.video.srcObject = stream;
       this.video.loop = true;
       this.video.muted = true;
+      this.video.onloadedmetadata =  this.onload;
+    },
+
+    onload() {
 
       this.renderer = SQR.Renderer('#gl', {
-        antialias: true
+        antialias: false
       }).clearColor(0.0, 0.0, 0.0, 1);
 
       this.rawFBO = SQR.FrameBuffer();
@@ -166,6 +164,7 @@ const app = new Vue({
       this.then = Date.now();
       this.now = 0;
       this.fps = 50;
+
       window.addEventListener('resize', this.resize);
       this.render();
       this.resize();
