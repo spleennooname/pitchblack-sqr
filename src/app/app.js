@@ -1,7 +1,4 @@
-//import SqrCamMixin from "./vue/mixins/sqr";
-//import ThreeCamMixin from "./vue/mixins/three";
-
-// start app
+import Vue from "vue";
 
 const SHADERS = {
   threshold : require("../glsl/threshold.glsl"),
@@ -10,26 +7,13 @@ const SHADERS = {
 
 const app = new Vue({
 
-  el: '#ui',
-
-  // mixins:[ SqrCamMixin  ],
+  el: '#app',
 
   data: {
     show: 1,
     hud: 0,
     isTouch: false,
     noSupport: false,
-    scaling: 1,
-    params: {
-      weight: 0.75,
-      decay: 0.90,
-      density: 0.85,
-      quality: 2.75,
-      samples: 20,
-      threshold: 0.45,
-      invert: false,
-      soft: 0.001
-    }
   },
 
   mounted() {
@@ -46,21 +30,35 @@ const app = new Vue({
 
       this.show = 0;
 
+
+      this.scaling = 1;
+    
+      this.params = {
+        weight: 0.75,
+        decay: 0.90,
+        density: 0.85,
+        quality: 2.75,
+        samples: 20,
+        threshold: 0.45,
+        invert: false,
+        soft: 0.001
+      }
+
       this.constraints =  {
         video: {
-            mandatory: {
-                minAspectRatio: 1.25,
-                maxAspectRatio: 1.6
-            },
-            optional: [{
-                minWidth: 640
-            }, {
-                minHeight: 480
-            }, {
-                maxWidth: 960
-            }, {
-                maxHeight: 720
-            }]
+            // mandatory: {
+            //     minAspectRatio: 1.25,
+            //     maxAspectRatio: 1.6
+            // },
+            // optional: [{
+            //     minWidth: 640
+            // }, {
+            //     minHeight: 480
+            // }, {
+            //     maxWidth: 960
+            // }, {
+            //     maxHeight: 720
+            // }]
         }
       };
 
@@ -88,9 +86,22 @@ const app = new Vue({
 
     onload() {
 
-      this.renderer = SQR.Renderer('#gl', {
-        antialias: false
-      }).clearColor(0.0, 0.0, 0.0, 1);
+      var hash = window.location.hash.substring(1);
+      this.scaling = hash !== "" ? parseFloat(hash) : 1.5;
+
+      this.fps_ms = 1000 / 60;
+
+      this.renderer = SQR.Renderer("#gl", {
+        antialias: true,
+        transparent: true
+      });
+
+      this.renderer.clearColor(0.0, 0.0, 0.0, 1);
+      this.context = this.renderer.context;
+
+      var w = window.innerWidth / this.scaling,
+        h = window.innerHeight / this.scaling,
+        aspect = w / h;
 
       this.rawFBO = SQR.FrameBuffer();
       this.postFBO = SQR.FrameBuffer();
@@ -107,25 +118,18 @@ const app = new Vue({
       this.root.add(this.camera);
 
       this.texture = SQR.Texture(this.video, {
-        isAnimated: true,
         minFilter: this.renderer.context.gl.LINEAR,
         magFilter: this.renderer.context.gl.LINEAR
       });
 
       this.shader = SQR.Shader(SQR.GLSL.texture).use().setUniform('uTexture', this.texture);
-
+         
       this.plane = SQR.Transform();
-      this.plane.buffer = SQR.Primitives.createPlane(4, 3, 2, 2, 0, 0).update();
-      this.plane.rotation.x = Math.PI / 2;
+      this.plane.buffer = SQR.Primitives.createPlane( 4*aspect, 4, 2, 2, 0, 0).update();
+      this.plane.rotation.x = 90 * (Math.PI / 180);
       this.plane.shader = this.shader;
 
       this.root.add(this.plane);
-
-      this.scene();
-
-    },
-
-    scene( obj ) {
 
       this.hud = 1;
       this.show = 0;
@@ -134,8 +138,8 @@ const app = new Vue({
       this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
       document.body.appendChild(this.stats.domElement);
 
-      this.isTouch = 'ontouchstart' in document;
-      this.mousemove = this.isTouch ? 'touchmove' : 'mousemove';
+      this.isTouch = "ontouchstart" in document;
+      this.mousemove = this.isTouch ? "touchmove" : "mousemove";
 
       //
       // this.tx = 0;
@@ -145,27 +149,32 @@ const app = new Vue({
 
       this.gui = new dat.GUI();
 
-      var f = this.gui.addFolder('rays');
-      f.add(this.params, 'weight', 0.1, 1.0);
-      f.add(this.params, 'decay', 0.6, 1.0);
-      f.add(this.params, 'density', 0.1, 1.0);
+      var f = this.gui.addFolder("rays");
+      f.add(this.params, "weight", 0.1, 1.0);
+      f.add(this.params, "decay", 0.6, 1.0);
+      f.add(this.params, "density", 0.1, 1.0);
       f.open();
 
       //f.add(this.params, 'samples', 10.0, 25.0).step(1.0)
       //f.add(this.params, 'quality', 1, 4).step(1.0).onFinishChange( this.set_quality );
 
-      f = this.gui.addFolder('black & white');
-      f.add(this.params, 'invert');
-      f.add(this.params, 'threshold', 0.02, 1.0);
+      f = this.gui.addFolder("black & white");
+      f.add(this.params, "invert");
+      f.add(this.params, "threshold", 0.02, 1.0);
       f.open();
 
-      this.gui.add(this.params, 'quality', 1.0, 3.5).step(0.25).onChange(this.set_quality);
+      this.gui
+        .add(this.params, "quality", 1.0, 3.5)
+        .step(0.25)
+        .onChange(this.set_quality);
 
-      this.then = Date.now();
+      window.addEventListener("resize", this.resize);
+
+      this.then = window.performance.now();
       this.now = 0;
       this.fps = 50;
 
-      window.addEventListener('resize', this.resize);
+      
       this.render();
       this.resize();
 
@@ -230,18 +239,15 @@ const app = new Vue({
     },
 
     render(timestamp) {
-
       requestAnimationFrame(this.render);
-
       this.stats.begin();
-      this.now = Date.now();
+      this.now = window.performance.now();
       var delta = this.now - this.then;
-      if (delta > (1000/this.fps)) {
-        this.draw();
-        this.then = this.now - (delta % (1000/this.fps) );
+      if (delta > this.fps_ms) {
+        this.then = this.now - (delta % this.fps_ms );
+         this.draw();
       }
       this.stats.end();
-
     },
 
     resize(e) {
@@ -250,11 +256,8 @@ const app = new Vue({
         return;
 
       var w = window.innerWidth,
-        h = window.innerHeight,
-        aspectRatio = this.video.videoWidth / this.video.videoHeight
-
-      h = this.video.videoHeight;
-      w = h * aspectRatio;
+          h = window.innerHeight,
+          aspectRatio = w/ h;
 
       this.rawFBO.resize(w / this.scaling, h / this.scaling);
       this.postFBO.resize(w / this.scaling, h / this.scaling);

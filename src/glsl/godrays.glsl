@@ -13,9 +13,9 @@ void main(void) {
 }
 
 //#fragment
-#ifdef GL_ES
+
 precision mediump float;
-#endif
+precision lowp int;
 
 uniform sampler2D uTexture;
 uniform float uTime;
@@ -77,7 +77,9 @@ void main(){
   delta_tc *= 1.0 / float(NUM_SAMPLES) * DENSITY;
 
   float illumination_decay = 0.95;
+  
   vec4 color = texture2D(uTexture, tc) ;
+
   vec4 sample_tx;
 
   tc += delta_tc * fract( sin( dot( uv.xy + fract( tc ), vec2(42.9898, 50.233) ) ) * 43758.5453 );
@@ -86,12 +88,10 @@ void main(){
     tc -= delta_tc;
     sample_tx = texture2D(uTexture, tc ) * illumination_decay * WEIGHT;
     //sample_tx *= illumination_decay * WEIGHT;
-    color += sample_tx * tc.y;//noise( vec2(tc.y, tc.x) ) ;
+    color += sample_tx * tc.y;
     illumination_decay *= DECAY_FACTOR ;
   }
 
-  vec4 c = color;
-
-  gl_FragColor = c * EXPOSURE;
+  gl_FragColor = color * EXPOSURE;
 
 }

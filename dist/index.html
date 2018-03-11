@@ -36,30 +36,29 @@
       [v-cloak] {
         display: none;
       }
-
     </style>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
     <link href="css/style.css" rel="stylesheet" type="text/css"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-    <script src="https://vuejs.org/js/vue.min.js"></script>
-
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js"></script> -->
-    <script src="bundle.lib.js"></script>
-
+    
   </head>
   <body>
+    
     <div class="gl">
       <canvas id="gl"></canvas>
     </div>
     <!-- ui -->
-    <div id="ui" v-cloak>
+    
+    <div id="app" v-cloak>
       <transition name="hud-fade">
         <div v-if="hud == 1 && !noSupport" class="hud">
           <span class="title">pitchblack</span>
           <span class="by">crafted by <a href="https://github.com/spleennooname">spleen.noo.name</a><br/></span>
-          <div class="screenshot--btn" @click="save_screenshot"><i class="fa fa-camera" aria-hidden="true"></i></a>
+          <div class="screenshot--btn" @click="save_screenshot"><i class="fa fa-camera" aria-hidden="true"></i></div>
         </div>
       </transition>
       <transition name="intro-fade">
@@ -73,10 +72,11 @@
           webcam access is not supported. please use latest chrome/firefox.
         </div>
       </transition>
-
     </div>
+
     <!-- /ui -->
     <script src="lib/sqr/sqr.min.js" defer ></script>
     <script src="bundle.app.js" defer></script>
+
   </body>
 </html>

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "webpack -p --config webpack.config.js --display-reasons --display-modules ",
     "deploy": "surge dist pitchblack.surge.sh",
-    "live": "webpack-dev-server --https --colors --hot --port 7073 --inline --config webpack.config.js --content-base dist --watch-content-base"
+    "dev": "webpack-dev-server --https --colors --hot --port 7073 --inline --config webpack.config.js --content-base dist --watch-content-base"
   },
   "repository": {
     "type": "git"
@@ -40,5 +40,8 @@
     "webpack": "^3.6.0",
     "webpack-dev-server": "^2.9.1",
     "webpack-obfuscator": "^0.11.2"
+  },
+  "dependencies": {
+    "vue": "^2.5.15"
   }
 }
