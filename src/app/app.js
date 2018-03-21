@@ -1,4 +1,5 @@
 import Vue from "vue";
+import screenfull from "screenfull";
 
 const SHADERS = {
   threshold : require("../glsl/threshold.glsl"),
@@ -30,14 +31,13 @@ const app = new Vue({
 
       this.show = 0;
 
-
       this.scaling = 1;
-    
+
       this.params = {
         weight: 0.75,
         decay: 0.90,
         density: 0.85,
-        quality: 2.75,
+        quality: 1.5,
         samples: 20,
         threshold: 0.45,
         invert: false,
@@ -45,20 +45,11 @@ const app = new Vue({
       }
 
       this.constraints =  {
+        audio: false,
         video: {
-            // mandatory: {
-            //     minAspectRatio: 1.25,
-            //     maxAspectRatio: 1.6
-            // },
-            // optional: [{
-            //     minWidth: 640
-            // }, {
-            //     minHeight: 480
-            // }, {
-            //     maxWidth: 960
-            // }, {
-            //     maxHeight: 720
-            // }]
+          width: { min: 640, ideal: 1280, max: 1920 },
+          height: { min: 480, ideal: 720, max: 1080 },
+          frameRate: { ideal: 40, max: 60 }
         }
       };
 
@@ -85,6 +76,8 @@ const app = new Vue({
     },
 
     onload() {
+
+      this.video.play()
 
       var hash = window.location.hash.substring(1);
       this.scaling = hash !== "" ? parseFloat(hash) : 1.5;
@@ -123,7 +116,7 @@ const app = new Vue({
       });
 
       this.shader = SQR.Shader(SQR.GLSL.texture).use().setUniform('uTexture', this.texture);
-         
+
       this.plane = SQR.Transform();
       this.plane.buffer = SQR.Primitives.createPlane( 4*aspect, 4, 2, 2, 0, 0).update();
       this.plane.rotation.x = 90 * (Math.PI / 180);
@@ -174,9 +167,14 @@ const app = new Vue({
       this.now = 0;
       this.fps = 50;
 
-      
+
+
       this.render();
       this.resize();
+
+      // if (screenfull.enabled) {
+      //   screenfull.request();
+      // }
 
     },
 
@@ -192,7 +190,7 @@ const app = new Vue({
               a = document.createElement("a");
           a.href = dataURL, a.download = "pitchblack_" + o + ".jpg", a.click();
       } else {
-        window.open(dataURL);
+        window.open(dataURL,"_blank","fullscreen=1");
       }
     },
 

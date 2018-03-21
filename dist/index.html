@@ -40,19 +40,20 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
     <link href="css/style.css" rel="stylesheet" type="text/css"/>
-   
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-    
+    <script src="lib/sqr/sqr.min.js" defer ></script>
+
   </head>
   <body>
-    
+
     <div class="gl">
       <canvas id="gl"></canvas>
     </div>
     <!-- ui -->
-    
+
     <div id="app" v-cloak>
       <transition name="hud-fade">
         <div v-if="hud == 1 && !noSupport" class="hud">
@@ -75,7 +76,7 @@
     </div>
 
     <!-- /ui -->
-    <script src="lib/sqr/sqr.min.js" defer ></script>
+
     <script src="bundle.app.js" defer></script>
 
   </body>

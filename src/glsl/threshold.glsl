@@ -1,6 +1,5 @@
-#ifdef GL_ES
+
 precision highp float;
-#endif
 
 attribute vec2 aPosition;
 attribute vec2 aUV;
@@ -13,9 +12,7 @@ void main(void) {
 }
 
 //#fragment
-#ifdef GL_ES
 precision highp float;
-#endif
 
 uniform sampler2D uTexture;
 

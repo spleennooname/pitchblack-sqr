@@ -1,3 +1,5 @@
+$dg-border-color: white;
+
 .dg.ac {
   z-index: 100!important;
 }
@@ -7,6 +9,8 @@
     margin-right: 0px;
     overflow-y: visible;
 }
+
+
 
 .dg.main .close-button {
   font-family: sans-serif;
@@ -33,6 +37,16 @@
 
 .dg .cr.function .property-name {
   width: 100%;
+}
+
+.dg .cr.number {
+  border-left: 2px solid $dg-border-color;
+  font-size: 8px;
+}
+
+.dg .c .slider-fg {
+  background: $dg-border-color;
+  max-width: 100%;
 }
 
 //

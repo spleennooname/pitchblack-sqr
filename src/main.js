@@ -1,6 +1,6 @@
-require("./css/dg.scss");
+import "./css/dg.scss";
 require("./css/transitions.scss");
-require("./css/style.scss");
+import "./css/style.scss";
 
 
 import "./app/app.js";
