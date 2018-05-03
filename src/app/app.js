@@ -47,9 +47,9 @@ const app = new Vue({
       this.constraints =  {
         audio: false,
         video: {
-          width: { min: 640, ideal: 1280, max: 1920 },
-          height: { min: 480, ideal: 720, max: 1080 },
-          frameRate: { ideal: 40, max: 60 }
+          width: { min: 640, max: 1920 },
+          height: { min: 480, max: 1080 },
+          frameRate: { ideal: 50, max: 60 }
         }
       };
 
@@ -72,29 +72,27 @@ const app = new Vue({
       this.video.srcObject = stream;
       this.video.loop = true;
       this.video.muted = true;
+      this.video.autoPlay = true;
       this.video.onloadedmetadata =  this.onload;
     },
 
     onload() {
-
-      this.video.play()
 
       var hash = window.location.hash.substring(1);
       this.scaling = hash !== "" ? parseFloat(hash) : 1.5;
 
       this.fps_ms = 1000 / 60;
 
-      this.renderer = SQR.Renderer("#gl", {
-        antialias: true,
-        transparent: true
-      });
+      this.video.play();
 
+      this.stats = new Stats();
+      this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+      document.body.appendChild(this.stats.domElement);
+
+      this.renderer = SQR.Renderer("#gl");
       this.renderer.clearColor(0.0, 0.0, 0.0, 1);
       this.context = this.renderer.context;
-
-      var w = window.innerWidth / this.scaling,
-        h = window.innerHeight / this.scaling,
-        aspect = w / h;
+      this.canvas = this.renderer.context.gl.canvas;
 
       this.rawFBO = SQR.FrameBuffer();
       this.postFBO = SQR.FrameBuffer();
@@ -117,8 +115,10 @@ const app = new Vue({
 
       this.shader = SQR.Shader(SQR.GLSL.texture).use().setUniform('uTexture', this.texture);
 
+      var aspectRatio = this.video.videoWidth / this.video.videoHeight ;
+
       this.plane = SQR.Transform();
-      this.plane.buffer = SQR.Primitives.createPlane( 4*aspect, 4, 2, 2, 0, 0).update();
+      this.plane.buffer = SQR.Primitives.createPlane( 4*aspectRatio, 4, 2, 2, 0, 0).update();
       this.plane.rotation.x = 90 * (Math.PI / 180);
       this.plane.shader = this.shader;
 
@@ -127,29 +127,17 @@ const app = new Vue({
       this.hud = 1;
       this.show = 0;
 
-      this.stats = new Stats();
-      this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-      document.body.appendChild(this.stats.domElement);
+
 
       this.isTouch = "ontouchstart" in document;
       this.mousemove = this.isTouch ? "touchmove" : "mousemove";
-
-      //
-      // this.tx = 0;
-      // this.ty = 0;
-      // this.mx = 0;
-      // this.my = 0;
-
       this.gui = new dat.GUI();
 
       var f = this.gui.addFolder("rays");
       f.add(this.params, "weight", 0.1, 1.0);
-      f.add(this.params, "decay", 0.6, 1.0);
+      f.add(this.params, "decay", 0.8, 1.0);
       f.add(this.params, "density", 0.1, 1.0);
       f.open();
-
-      //f.add(this.params, 'samples', 10.0, 25.0).step(1.0)
-      //f.add(this.params, 'quality', 1, 4).step(1.0).onFinishChange( this.set_quality );
 
       f = this.gui.addFolder("black & white");
       f.add(this.params, "invert");
@@ -161,20 +149,15 @@ const app = new Vue({
         .step(0.25)
         .onChange(this.set_quality);
 
-      window.addEventListener("resize", this.resize);
 
       this.then = window.performance.now();
       this.now = 0;
-      this.fps = 50;
+      this.fps = 60;
 
-
+      this.resize();
+      window.addEventListener("resize", this.resize);
 
       this.render();
-      this.resize();
-
-      // if (screenfull.enabled) {
-      //   screenfull.request();
-      // }
 
     },
 
@@ -201,15 +184,11 @@ const app = new Vue({
 
     draw() {
 
-      if( !this.video || this.video.readyState !== this.video.HAVE_ENOUGH_DATA) {
+      if(  !this.video || this.video.readyState !== this.video.HAVE_ENOUGH_DATA) {
         return;
       }
 
-      this.update();
-
-    },
-
-    update() {
+      //console.log("draw ", this.video.readyState, this.video.HAVE_ENOUGH_DATA)
 
       this.texture.update();
 
@@ -225,43 +204,45 @@ const app = new Vue({
       this.renderer.render(this.thresold);
 
       this.renderer.renderToScreen();
-      this.renderer.context.gl.viewport(0, 0, this.renderer.context.canvas.width, this.renderer.context.canvas.height);
+      this.renderer.context.gl.viewport(0, 0, this.renderer.context.gl.drawingBufferWidth, this.renderer.context.gl.drawingBufferHeight);
 
       this.post.shader.use();
       this.post.shader.setUniform('WEIGHT', this.params["weight"]);
       this.post.shader.setUniform('DECAY_FACTOR', this.params["decay"]);
-      //this.post.shader.setUniform('NUM_SAMPLES', this.params["samples"]);
       this.post.shader.setUniform('DENSITY', this.params["density"]);
       this.post.shader.setUniform('uTexture', this.thresoldFBO.texture);
       this.renderer.render(this.post);
+
     },
 
-    render(timestamp) {
+    render() {
       requestAnimationFrame(this.render);
       this.stats.begin();
       this.now = window.performance.now();
       var delta = this.now - this.then;
       if (delta > this.fps_ms) {
         this.then = this.now - (delta % this.fps_ms );
-         this.draw();
+        this.draw();
       }
       this.stats.end();
     },
 
-    resize(e) {
+    resize(){
 
-      if (!this.video)
-        return;
+          var aspectRatio = this.video.videoWidth / this.video.videoHeight ;
+          var w = this.video.videoWidth / this.scaling;
+          var h = this.video.videoHeight / this.scaling;
 
-      var w = window.innerWidth,
-          h = window.innerHeight,
-          aspectRatio = w/ h;
+         // console.log("***", this.video.videoWidth , this.scaling, w, h)
+         // this.canvas.width = w;
+          //this.canvas.height = h;
 
-      this.rawFBO.resize(w / this.scaling, h / this.scaling);
-      this.postFBO.resize(w / this.scaling, h / this.scaling);
-      this.thresoldFBO.resize(w / this.scaling, h / this.scaling);
-      this.renderer.context.size(w / this.scaling, h / this.scaling, window.devicePixelRatio);
-      this.camera.projection = new SQR.ProjectionMatrix().perspective(70, aspectRatio, 1, 1000);
+          this.rawFBO.resize(w, h);
+          this.postFBO.resize(w, h);
+          this.thresoldFBO.resize(w, h);
+          this.renderer.context.size(w, h, window.devicePixelRatio);
+          this.camera.projection = new SQR.ProjectionMatrix().perspective(70, aspectRatio, 1, 1000);
+
     }
 
   }

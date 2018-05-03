@@ -8,12 +8,10 @@ attribute vec2 aUV;
 
 varying vec2 vUV;
 varying vec4 vColor;
-varying float vF;
 
 
 void main() {
     gl_Position = vec4(aPosition, 0.0, 1.0);
-    vF = fract( sin( dot( aUV.yx + fract( aUV), vec2(42.9898, 50.233) ) ) * 43758.5453 );
     vUV = aUV;
 }
 
@@ -23,16 +21,15 @@ precision mediump float;
 precision lowp int;
 
 uniform lowp sampler2D uTexture;
-uniform float uTime;
+uniform lowp float uTime;
 
 varying vec3 vNormal;
 varying vec2 vUV;
-varying float vF;
 
 //godray
 
-#define EXPOSURE 0.25
-#define NUM_SAMPLES 50
+#define EXPOSURE 0.1
+#define NUM_SAMPLES 35
 
 uniform float WEIGHT, DECAY_FACTOR, DENSITY;
 
@@ -61,15 +58,16 @@ void main(void){
   vec2 uv, tc, delta_tc;
   uv = tc = delta_tc = vUV;
 
-  float t = uTime * 0.0018;
+  mediump float t = uTime * 0.002;
 
   delta_tc = uv + vec2( sin( t*.3)*.3, -cos(t*.2)*.3 ) - vec2(.5);
   delta_tc *= ( 1.0 / float(NUM_SAMPLES) ) * DENSITY;
 
   vec4 sample_tx, color = vec4(1.);
-  float illumination_decay = 0.95;
 
-  tc += delta_tc *vF ;
+  float illumination_decay = 0.98;
+
+  tc += delta_tc * rand( tc.yx + fract( tc ) );
 
   for(int i=0; i < NUM_SAMPLES; i++) {
     tc -= delta_tc;

@@ -10,8 +10,6 @@ $dg-border-color: white;
     overflow-y: visible;
 }
 
-
-
 .dg.main .close-button {
   font-family: sans-serif;
   text-transform: uppercase;
@@ -45,10 +43,37 @@ $dg-border-color: white;
 }
 
 .dg .c .slider-fg {
-  background: $dg-border-color;
+  background: #fdfdfd;
   max-width: 100%;
 }
 
+.dg li:not(.folder) {
+  cursor: auto;
+  height: 25px;
+  line-height: 25px;
+  padding: 0 5px 0 20px;
+}
+
+.dg.main .close-button {
+  font-family: sans-serif;
+  font-size: 9px;
+  padding: 5px;
+  height: auto !important;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.dg .cr.number input[type="text"] {
+  color: $dg-border-color;
+}
+
+.dg .c .slider:hover .slider-fg {
+  background: white;
+}
+
+.dg .cr.boolean {
+  border-left: 2px $dg-border-color;
+}
 //
 // .dg.main.taller-than-window .close-button {
 //     border-top: 1px solid #ddd;
