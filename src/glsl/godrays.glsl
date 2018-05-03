@@ -1,6 +1,6 @@
 //#vertex
 
-precision mediump float;
+precision highp float;
 precision lowp int;
 
 attribute vec2 aPosition;
@@ -17,7 +17,7 @@ void main() {
 
 //#fragment
 
-precision mediump float;
+precision highp float;
 precision lowp int;
 
 uniform lowp sampler2D uTexture;
@@ -29,7 +29,7 @@ varying vec2 vUV;
 //godray
 
 #define EXPOSURE 0.1
-#define NUM_SAMPLES 35
+#define NUM_SAMPLES 25
 
 uniform float WEIGHT, DECAY_FACTOR, DENSITY;
 
