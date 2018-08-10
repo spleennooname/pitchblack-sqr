@@ -3,9 +3,9 @@
   "author": "spleen666@gmail.com",
   "description": "WebGL multipass experimentation features godrays and black-white thresholds",
   "scripts": {
-    "build": "webpack -p --config webpack.config.js --display-reasons --display-modules ",
-    "deploy": "surge dist pitchblack.surge.sh",
-    "dev": "webpack-dev-server --https --colors --hot --port 7073 --config webpack.config.js --content-base dist --watch-content-base"
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --https --port 7073  --content-base dist --watch-content-base",
+    "build": "cross-env NODE_ENV=production webpack -p --progress --hide-modules",
+    "deploy": "surge dist pitchblack.surge.sh"
   },
   "repository": {
     "type": "git"
@@ -27,6 +27,7 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
     "concat": "^1.0.3",
+    "cross-env": "^5.2.0",
     "css-loader": "^0.28.7",
     "eslint": "^4.7.2",
     "eslint-loader": "^1.9.0",

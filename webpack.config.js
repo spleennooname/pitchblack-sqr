@@ -1,12 +1,11 @@
 
 const path = require("path");
 const webpack = require("webpack");
-const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const JavaScriptObfuscator = require("webpack-obfuscator");
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
+
   entry: {
     app: ["./src/main.js"],
     // lib: ["./src/lib.js"]
@@ -39,14 +38,11 @@ module.exports = {
     ]
   },
 
-  devtool: "cheap-module-source-map",
-
   resolve: {
     alias: {
       vue: "vue/dist/vue.min.js",
       screenfull: "screenfull/dist/screenfull.js"
     },
-
     extensions: ["*", ".js", ".vue", ".json"]
   },
 
@@ -57,17 +53,34 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    }),
-
-    new OptimizeCssAssetsPlugin(),
 
     new ExtractTextPlugin({
       filename: "css/style.css"
-    })
-    // new JavaScriptObfuscator ({
-    //   rotateUnicodeArray: true
-    // })
-  ]
+    }),
+
+  ],
+
+  devtool: "#cheap-module-source-map",
+
 };
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports.devtool = '#nosources-source-map';
+  // http://vue-loader.vuejs.org/en/workflow/production.html
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"production"'
+      }
+    }),
+    new UglifyJsPlugin({
+      sourceMap: true,
+      uglifyOptions: {
+        warnings: false
+      }
+    }),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true
+    })
+  ])
+}
